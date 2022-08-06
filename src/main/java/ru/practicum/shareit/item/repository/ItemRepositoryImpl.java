@@ -49,7 +49,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public void deleteItem(Integer userId, Integer itemId) {
         if (items.containsKey(itemId)) {
             Item item = items.get(itemId);
-            if (item.getOwner().equals(userRepository.get(userId))) {
+            if (item.getOwner().equals(userRepository.get(userId).get())) {
                 items.remove(itemId);
             } else {
                 log.error("Попытка удаления предмета который не пренадлежит пользователю");
@@ -63,7 +63,9 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Collection<Item> getItems(Integer userId) {
-        return items.values().stream().filter(item -> item.getOwner().getId() == userId).collect(Collectors.toList());
+        return items.values().stream()
+                .filter(item -> item.getOwner().getId().equals(userId))
+                .collect(Collectors.toList());
     }
 
     @Override
