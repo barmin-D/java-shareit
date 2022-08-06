@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.model;
 
 
-
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

@@ -3,12 +3,10 @@ package ru.practicum.shareit.user.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -42,7 +40,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto put(@PathVariable Integer userId,@RequestBody UserDto userDto) {
-        return userService.put(userId,userDto);
+    public UserDto put(@PathVariable Integer userId, @RequestBody UserDto userDto) {
+        return userService.put(userId, userDto);
     }
 }

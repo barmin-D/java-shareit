@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
+
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -25,30 +25,30 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@RequestHeader("X-Later-User-Id") Integer userId,
+    public ItemDto add(@RequestHeader("X-Sharer-User-Id") Integer userId,
                        @Valid @RequestBody ItemDto itemDto) {
         return itemService.addNewItem(userId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
-    public void deleteItem(@RequestHeader("X-Later-User-Id") Integer userId,
+    public void deleteItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                            @PathVariable Integer itemId) {
         itemService.deleteItem(userId, itemId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Later-User-Id") Integer userId,
-                          @PathVariable Integer itemId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                          @PathVariable Integer itemId, @RequestBody ItemDto itemDto) {
         return itemService.update(userId, itemId, itemDto);
     }
 
     @GetMapping
-    public Collection<ItemDto> getItems(@RequestHeader("X-Later-User-Id") Integer userId) {
+    public Collection<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.getItems(userId);
     }
 
     @GetMapping("search")
-    public Collection<ItemDto> search(@RequestHeader("X-Later-User-Id") Integer userId,
+    public Collection<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                       @RequestParam(required = false) String text) {
         return itemService.search(userId, text);
     }

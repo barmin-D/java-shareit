@@ -8,14 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.repository.UserRepositoryImpl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -56,11 +51,11 @@ public class ItemRepositoryImpl implements ItemRepository {
             Item item = items.get(itemId);
             if (item.getOwner().equals(userRepository.get(userId))) {
                 items.remove(itemId);
-            }else{
+            } else {
                 log.error("Попытка удаления предмета который не пренадлежит пользователю");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
-        }else {
+        } else {
             log.error("Попытка удаления предмета которого нет");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -68,19 +63,25 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Collection<Item> getItems(Integer userId) {
-        return items.values().stream().filter(item -> item.getOwner().getId()==userId).collect(Collectors.toList());
+        return items.values().stream().filter(item -> item.getOwner().getId() == userId).collect(Collectors.toList());
     }
 
     @Override
     public Item update(Item item) {
-        items.put(item.getId(),item);
+        items.put(item.getId(), item);
         return item;
     }
 
     @Override
     public Collection<Item> search(Integer userId, String text) {
-        return items.values().stream().filter(item -> Boolean.parseBoolean(item.getName()+item.getDescription()
-                .toUpperCase(Locale.ROOT).contains(text))).collect(Collectors.toList());
+        if (text.length() == 0) {
+            return new ArrayList<>();
+        }
+        String textString = text.toUpperCase(Locale.ROOT);
+        return items.values().stream()
+                .filter(item -> (item.getName() + item.getDescription()).toUpperCase(Locale.ROOT).contains(textString))
+                .filter(item -> item.getAvailable() == true)
+                .collect(Collectors.toList());
     }
 
     private Item validateItem(Item item) {
@@ -91,6 +92,9 @@ public class ItemRepositoryImpl implements ItemRepository {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (item.getName().length() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        if (item.getAvailable() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return item;

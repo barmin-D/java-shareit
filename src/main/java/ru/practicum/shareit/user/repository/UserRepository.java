@@ -10,11 +10,12 @@ public interface UserRepository {
     Map<Integer, User> getUsers();
 
     Collection<User> findAll();
+
     User save(User user);
 
     Optional<User> get(Integer id);
 
     void deleteUser(Integer id);
 
-    User put(Integer userId,User user);
+    User put(Integer userId, User user);
 }

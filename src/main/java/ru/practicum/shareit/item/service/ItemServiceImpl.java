@@ -61,9 +61,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDto> getItems(Integer userId) {
-        Collection<ItemDto> itemDtoCollection=new ArrayList<>();
-        Collection<Item> itemCollection=new ArrayList<>((Collection) itemRepository.getItems(userId));
-        for(Item item:itemCollection){
+        Collection<ItemDto> itemDtoCollection = new ArrayList<>();
+        Collection<Item> itemCollection = new ArrayList<>((Collection) itemRepository.getItems(userId));
+        for (Item item : itemCollection) {
             itemDtoCollection.add(itemMapper.toItemDto(item));
         }
         return itemDtoCollection;
@@ -71,9 +71,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDto> search(Integer userId, String text) {
-        Collection<ItemDto> itemDtoCollection=new ArrayList<>();
-        Collection<Item> itemCollection=new ArrayList<>((Collection) itemRepository.search(userId,text));
-        for(Item item:itemCollection){
+        Collection<ItemDto> itemDtoCollection = new ArrayList<>();
+        Collection<Item> itemCollection = new ArrayList<>((Collection) itemRepository.search(userId, text));
+        for (Item item : itemCollection) {
             itemDtoCollection.add(itemMapper.toItemDto(item));
         }
         return itemDtoCollection;

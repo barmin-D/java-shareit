@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.repository;
 
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -12,7 +11,7 @@ public interface ItemRepository {
 
     void deleteItem(Integer userId, Integer itemId);
 
-    Collection<Item>  getItems(Integer userId);
+    Collection<Item> getItems(Integer userId);
 
     Item update(Item item);
 

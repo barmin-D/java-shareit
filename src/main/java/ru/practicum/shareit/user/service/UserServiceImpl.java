@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Collection;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,16 +33,16 @@ class UserServiceImpl implements UserService {
 
     @Override
     public UserDto saveUser(UserDto userDto) {
-        if (userDto.getEmail()==null){
+        if (userDto.getEmail() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        User user=userMapper.toUser(userDto);
+        User user = userMapper.toUser(userDto);
         return userMapper.toUserDto(repository.save(user));
     }
 
     @Override
     public Optional<UserDto> get(Integer id) {
-        Optional<User>user=repository.get(id);
+        Optional<User> user = repository.get(id);
         return Optional.of(userMapper.toUserDto(user.get()));
     }
 
@@ -53,14 +52,14 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto put(Integer userId,UserDto  userDto ) {
-        Optional<User> user=repository.get(userId);
+    public UserDto put(Integer userId, UserDto userDto) {
+        Optional<User> user = repository.get(userId);
         for (User u : repository.findAll()) {
             if (u.getEmail().equals(userDto.getEmail())) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        userMapper.updateUserFromUserDto(userDto,user.get());
-        return userMapper.toUserDto(repository.put(userId,user.get()));
+        userMapper.updateUserFromUserDto(userDto, user.get());
+        return userMapper.toUserDto(repository.put(userId, user.get()));
     }
 }
