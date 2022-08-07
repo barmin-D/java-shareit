@@ -46,7 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User save(User user) {
         validateUser(user);
         user.setId(getIdCounter());
-        log.debug("Пользователь сохранен");
+        log.info("Пользователь сохранен: {}",user);
         users.put(user.getId(), user);
         return user;
     }
@@ -73,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
             user.setId(userId);
             User userOld = users.get(userId);
             userMapper.updateUserFromUserDto(userMapper.toUserDto(user), userOld);
-            log.info("Пользователь изменен");
+            log.info("Пользователь изменен: {}",userOld);
             users.put(userId, userOld);
             return userOld;
         } else {
