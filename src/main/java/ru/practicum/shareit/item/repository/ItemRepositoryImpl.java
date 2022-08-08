@@ -40,7 +40,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item addNewItem(Item item) {
         validateItem(item);
         item.setId(getIdCounter());
-        log.info("Предмет сохранен: {}",item);
+        log.info("Предмет сохранен: {}", item);
         items.put(item.getId(), item);
         return item;
     }
@@ -70,7 +70,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item update(Item item) {
-        log.info("Предмет изменен: {}",item);
+        log.info("Предмет изменен: {}", item);
         items.put(item.getId(), item);
         return item;
     }
