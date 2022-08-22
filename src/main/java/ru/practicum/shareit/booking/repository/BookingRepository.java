@@ -22,6 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Collection<Booking> findAllByItemOwnerAndStartBeforeAndEndAfterOrderByStartDesc(User user, LocalDateTime now,
                                                                                     LocalDateTime localDateTime);
+
     Collection<Booking> findAllByItemOwnerAndEndBeforeOrderByStartDesc(User user, LocalDateTime now);
 
     @Query("select b from Booking b" +

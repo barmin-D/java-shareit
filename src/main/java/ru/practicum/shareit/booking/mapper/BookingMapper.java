@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.model.User;
 public interface BookingMapper {
     BookingDto toBookingDto(Booking booking);
 
-    Booking toBooking(BookingDto BookingDto, Item item, User user);
+    Booking toBooking(BookingDto bookingDto, Item item, User user);
 
     BookingFullDto toBookingFullDto(Booking booking);
 

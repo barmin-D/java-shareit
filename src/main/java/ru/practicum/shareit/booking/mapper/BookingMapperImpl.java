@@ -29,17 +29,17 @@ public class BookingMapperImpl implements BookingMapper {
     }
 
     @Override
-    public Booking toBooking(BookingDto BookingDto, Item item, User user) {
-        if (BookingDto == null) {
+    public Booking toBooking(BookingDto bookingDto, Item item, User user) {
+        if (bookingDto == null) {
             return null;
         }
         BookingBuilder booking = Booking.builder();
-        booking.id(BookingDto.getId());
-        booking.start(BookingDto.getStart());
-        booking.end(BookingDto.getEnd());
+        booking.id(bookingDto.getId());
+        booking.start(bookingDto.getStart());
+        booking.end(bookingDto.getEnd());
         booking.item(item);
         booking.booker(user);
-        booking.status(BookingDto.getStatus());
+        booking.status(bookingDto.getStatus());
         return booking.build();
     }
 

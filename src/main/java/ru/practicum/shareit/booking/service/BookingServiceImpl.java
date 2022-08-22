@@ -23,7 +23,6 @@ import java.util.Optional;
 
 @Service
 public class BookingServiceImpl implements BookingService {
-    private final LocalDateTime TIME = LocalDateTime.now();
     private ItemDbRepository itemRepository;
     private UserDbRepository userRepository;
     private BookingMapper bookingMapper;
