@@ -57,15 +57,11 @@ public class ItemServiceImpl implements ItemService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         User user = userRepository.findById(userId).get();
-        Booking lastBooking =
-                bookingRepository.findFirstByItemOwnerAndStartBeforeAndStatusOrderByStartDesc(user,
-                        LocalDateTime.now(), Status.APPROVED);
-        BookingBookerDto last = bookingMapper.toBookingBookerDto(lastBooking);
-        Booking firstBooking =
-                bookingRepository.findFirstByItemOwnerAndStartAfterAndStatusOrderByStartAsc(user,
-                        LocalDateTime.now(), Status.APPROVED);
-        BookingBookerDto next = bookingMapper.toBookingBookerDto(firstBooking);
         Item item = itemRepository.findById(itemId).get();
+        Booking lastBooking = bookingRepository.findFirstByItemOwnerDesc(itemId, user, LocalDateTime.now());
+        BookingBookerDto last = bookingMapper.toBookingBookerDto(lastBooking);
+        Booking firstBooking = bookingRepository.findFirstByItemOwnerAsc(itemId, user, LocalDateTime.now());
+        BookingBookerDto next = bookingMapper.toBookingBookerDto(firstBooking);
         List<CommentDto> commentDtoList;
         List<Comment> commentList = commentRepository.findAllByItemOrderByCreated(item);
         commentDtoList = commentList.stream()
@@ -128,11 +124,11 @@ public class ItemServiceImpl implements ItemService {
         }
         Item item = itemRepository.findById(itemId).get();
         Booking lastBooking =
-                bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item,
+                bookingRepository.findFirstByItemDesc(item,
                         LocalDateTime.now(), Status.APPROVED);
         BookingBookerDto last = bookingMapper.toBookingBookerDto(lastBooking);
         Booking firstBooking =
-                bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item,
+                bookingRepository.findFirstByItemAsc(item,
                         LocalDateTime.now(), Status.APPROVED);
         BookingBookerDto next = bookingMapper.toBookingBookerDto(firstBooking);
         List<CommentDto> commentDtoList = new ArrayList<>();
@@ -171,8 +167,7 @@ public class ItemServiceImpl implements ItemService {
         }
         User user = userRepository.findById(userId).get();
         Item item = itemRepository.findById(itemId).get();
-        if (bookingRepository.findFirstByItemAndBookerAndEndIsBeforeAndStatusOrderByStartDesc(item, user,
-                LocalDateTime.now(), Status.APPROVED) == null) {
+        if (bookingRepository.findFirstByItemAndBookerDesc(item, user, LocalDateTime.now(), Status.APPROVED) == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Comment comment = commentMapper.toComment(commentDto, user, item);

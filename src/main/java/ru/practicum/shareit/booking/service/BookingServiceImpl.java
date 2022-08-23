@@ -122,8 +122,7 @@ public class BookingServiceImpl implements BookingService {
                     break;
                 case "CURRENT":
                     bookingCollection =
-                            bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfterOrderByStartDesc(user,
-                                    LocalDateTime.now(), LocalDateTime.now());
+                            bookingRepository.findAllByOwnerCurrent(user, LocalDateTime.now(), LocalDateTime.now());
                     break;
                 case "PAST":
                     bookingCollection = bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(user,
@@ -171,10 +170,12 @@ public class BookingServiceImpl implements BookingService {
                     bookingCollection = bookingRepository.findAllByBookerInFuture(user);
                     break;
                 case "WAITING":
-                    bookingCollection = bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.WAITING);
+                    bookingCollection =
+                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.WAITING);
                     break;
                 case "REJECTED":
-                    bookingCollection = bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.REJECTED);
+                    bookingCollection =
+                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.REJECTED);
                     break;
                 default:
                     throw new ValidationException(String.format("Unknown state: %s", state));

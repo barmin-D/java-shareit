@@ -20,8 +20,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Collection<Booking> findAllByBookerAndStatusOrderByStartAsc(User user, Status status);
 
-    Collection<Booking> findAllByItemOwnerAndStartBeforeAndEndAfterOrderByStartDesc(User user, LocalDateTime now,
-                                                                                    LocalDateTime localDateTime);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
+            "where i.owner=?1 and b.start<?2 and b.end>?3 order by b.start desc ")
+    Collection<Booking> findAllByOwnerCurrent(User user, LocalDateTime now, LocalDateTime localDateTime);
 
     Collection<Booking> findAllByItemOwnerAndEndBeforeOrderByStartDesc(User user, LocalDateTime now);
 
@@ -39,14 +40,23 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Collection<Booking> findAllByItemOwnerAndStatus(User user, Status status);
 
-    Booking findFirstByItemOwnerAndStartAfterAndStatusOrderByStartAsc(User user, LocalDateTime now, Status approved);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
+            "where i.id=?1 and i.owner=?2 and b.start>?3  order by b.start asc ")
+    Booking findFirstByItemOwnerAsc(Integer itemId, User user, LocalDateTime now);
 
-    Booking findFirstByItemOwnerAndStartBeforeAndStatusOrderByStartDesc(User user, LocalDateTime now, Status approved);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
+            "where i.id=?1 and i.owner=?2 and b.start<?3  order by b.start desc ")
+    Booking findFirstByItemOwnerDesc(Integer itemId, User user, LocalDateTime now);
 
-    Booking findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(Item item, LocalDateTime now, Status approved);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
+            "where i=?1 and b.start<?2 and b.status=?3 order by b.start desc ")
+    Booking findFirstByItemDesc(Item item, LocalDateTime now, Status approved);
 
-    Booking findFirstByItemAndStartAfterAndStatusOrderByStartAsc(Item item, LocalDateTime now, Status approved);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
+            "where i=?1 and b.start>?2 and b.status=?3 order by b.start asc ")
+    Booking findFirstByItemAsc(Item item, LocalDateTime now, Status approved);
 
-    Booking findFirstByItemAndBookerAndEndIsBeforeAndStatusOrderByStartDesc(Item item, User user,
-                                                                            LocalDateTime now, Status approved);
+    @Query("select b from Booking b join fetch Item i on b.item.id=i.id" +
+            " where i=?1 and b.booker=?2 and b.end<?3 and b.status=?4 order by b.start desc ")
+    Booking findFirstByItemAndBookerDesc(Item item, User user, LocalDateTime now, Status approved);
 }
