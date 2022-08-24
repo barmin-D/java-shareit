@@ -25,11 +25,10 @@ public class UserMapperImpl implements UserMapper {
         if (userDto == null) {
             return null;
         }
-        String email = null;
-        email = userDto.getEmail();
-        User user = new User(email);
+        User user = new User();
         user.setId(userDto.getId());
         user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
         return user;
     }
 
