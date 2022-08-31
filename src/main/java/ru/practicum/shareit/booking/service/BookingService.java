@@ -15,7 +15,7 @@ public interface BookingService {
 
     BookingFullDto approveBooking(Integer userId, Integer bookingId, Boolean approved);
 
-    Collection<BookingFullDto> getBookingsOwner(Integer userId, String state);
+    Collection<BookingFullDto> getBookingsOwner(Integer userId, String state, Integer from, Integer size);
 
-    Collection<BookingFullDto> getBookings(Integer userId, String state);
+    Collection<BookingFullDto> getBookings(Integer userId, String state, Integer from, Integer size);
 }

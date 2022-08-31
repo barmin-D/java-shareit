@@ -2,7 +2,11 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFullDto;
 import ru.practicum.shareit.booking.exception.*;
@@ -18,6 +22,7 @@ import ru.practicum.shareit.user.repository.UserDbRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -111,31 +116,36 @@ public class BookingServiceImpl implements BookingService {
 
     @SneakyThrows
     @Override
-    public Collection<BookingFullDto> getBookingsOwner(Integer userId, String state) {
+    public Collection<BookingFullDto> getBookingsOwner(Integer userId, String state, Integer from, Integer size) {
+        if (from < 0 || size <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         if (userRepository.findById(userId).isPresent()) {
             User user = userRepository.findById(userId).get();
             Collection<BookingFullDto> list = new ArrayList<>();
-            Collection<Booking> bookingCollection;
+            List<Booking> bookingCollection;
+            Pageable pageable = PageRequest.of(from / size, size);
             switch (state) {
                 case "ALL":
-                    bookingCollection = bookingRepository.findAllByItemOwnerOrderByIdDesc(user);
+                    bookingCollection = bookingRepository.findAllByItemOwnerOrderByIdDesc(user, pageable);
                     break;
                 case "CURRENT":
                     bookingCollection =
-                            bookingRepository.findAllByOwnerCurrent(user, LocalDateTime.now(), LocalDateTime.now());
+                            bookingRepository.findAllByOwnerCurrent(user, LocalDateTime.now(), LocalDateTime.now(),
+                                    pageable);
                     break;
                 case "PAST":
                     bookingCollection = bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(user,
-                            LocalDateTime.now());
+                            LocalDateTime.now(), pageable);
                     break;
                 case "FUTURE":
-                    bookingCollection = bookingRepository.findAllByBookerInFuture(user);
+                    bookingCollection = bookingRepository.findAllByBookerInFuture(user,pageable);
                     break;
                 case "WAITING":
-                    bookingCollection = bookingRepository.findAllByItemOwnerAndStatus(user, Status.WAITING);
+                    bookingCollection = bookingRepository.findAllByItemOwnerAndStatus(user, Status.WAITING, pageable);
                     break;
                 case "REJECTED":
-                    bookingCollection = bookingRepository.findAllByItemOwnerAndStatus(user, Status.REJECTED);
+                    bookingCollection = bookingRepository.findAllByItemOwnerAndStatus(user, Status.REJECTED, pageable);
                     break;
                 default:
                     throw new ValidationException(String.format("Unknown state: %s", state));
@@ -150,32 +160,36 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingFullDto> getBookings(Integer userId, String state) {
+    public Collection<BookingFullDto> getBookings(Integer userId, String state, Integer from, Integer size) {
+        if (from < 0 || size <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         if (userRepository.findById(userId).isPresent()) {
             User user = userRepository.findById(userId).get();
             Collection<BookingFullDto> list = new ArrayList<>();
             Collection<Booking> bookingCollection;
+            Pageable pageable = PageRequest.of(from / size, size);
             switch (state) {
                 case "ALL":
-                    bookingCollection = bookingRepository.findAllByBookerOrderByStartDesc(user);
+                    bookingCollection = bookingRepository.findAllByBookerOrderByStartDesc(user, pageable);
                     break;
                 case "CURRENT":
                     bookingCollection = bookingRepository.findAllByBookerCurrent(user, LocalDateTime.now(),
-                            LocalDateTime.now());
+                            LocalDateTime.now(), pageable);
                     break;
                 case "PAST":
-                    bookingCollection = bookingRepository.findAllByBookerInPast(user, LocalDateTime.now());
+                    bookingCollection = bookingRepository.findAllByBookerInPast(user, LocalDateTime.now(), pageable);
                     break;
                 case "FUTURE":
-                    bookingCollection = bookingRepository.findAllByBookerInFuture(user);
+                    bookingCollection = bookingRepository.findAllByBookerInFuture(user, pageable);
                     break;
                 case "WAITING":
                     bookingCollection =
-                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.WAITING);
+                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.WAITING, pageable);
                     break;
                 case "REJECTED":
                     bookingCollection =
-                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.REJECTED);
+                            bookingRepository.findAllByBookerAndStatusOrderByStartAsc(user, Status.REJECTED, pageable);
                     break;
                 default:
                     throw new ValidationException(String.format("Unknown state: %s", state));

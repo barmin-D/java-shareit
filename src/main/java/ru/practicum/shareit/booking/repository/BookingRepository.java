@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -8,37 +9,37 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-    Collection<Booking> findAllByBookerOrderByStartDesc(User user);
+    List<Booking> findAllByBookerOrderByStartDesc(User user, Pageable pageable);
 
     @Query("select b from Booking b" +
             " where b.booker=?1 and b.start<=?2 and b.end>=?3" +
             " order by b.id asc ")
-    Collection<Booking> findAllByBookerCurrent(User user, LocalDateTime now, LocalDateTime localDateTime);
+    List<Booking> findAllByBookerCurrent(User user, LocalDateTime now, LocalDateTime localDateTime, Pageable pageable);
 
-    Collection<Booking> findAllByBookerAndStatusOrderByStartAsc(User user, Status status);
+    List<Booking> findAllByBookerAndStatusOrderByStartAsc(User user, Status status, Pageable pageable);
 
     @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
             "where i.owner=?1 and b.start<?2 and b.end>?3 order by b.start desc ")
-    Collection<Booking> findAllByOwnerCurrent(User user, LocalDateTime now, LocalDateTime localDateTime);
+    List<Booking> findAllByOwnerCurrent(User user, LocalDateTime now, LocalDateTime localDateTime, Pageable pageable);
 
-    Collection<Booking> findAllByItemOwnerAndEndBeforeOrderByStartDesc(User user, LocalDateTime now);
+    List<Booking> findAllByItemOwnerAndEndBeforeOrderByStartDesc(User user, LocalDateTime now, Pageable pageable);
 
     @Query("select b from Booking b" +
             " where  b.start>CURRENT_DATE " +
             " order by b.id desc ")
-    Collection<Booking> findAllByBookerInFuture(User user);
+    List<Booking> findAllByBookerInFuture(User user, Pageable pageable);
 
     @Query("select b from Booking b " +
             "where b.booker=?1 and b.end<=?2" +
             " order by b.id desc ")
-    Collection<Booking> findAllByBookerInPast(User user, LocalDateTime now);
+    List<Booking> findAllByBookerInPast(User user, LocalDateTime now, Pageable pageable);
 
-    Collection<Booking> findAllByItemOwnerOrderByIdDesc(User user);
+    List<Booking> findAllByItemOwnerOrderByIdDesc(User user, Pageable pageable);
 
-    Collection<Booking> findAllByItemOwnerAndStatus(User user, Status status);
+    List<Booking> findAllByItemOwnerAndStatus(User user, Status status, Pageable pageable);
 
     @Query("select b from Booking b join fetch Item i on b.item.id=i.id " +
             "where i.id=?1 and i.owner=?2 and b.start>?3  order by b.start asc ")
