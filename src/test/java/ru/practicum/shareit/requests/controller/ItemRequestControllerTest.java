@@ -70,7 +70,8 @@ class ItemRequestControllerTest {
         item = new Item(1, "name", "test", true, user, null);
         commentDto = new CommentDto(null, "trololo", null, null);
         itemService.createComment(1, 1, commentDto);
-        itemRequestDto = new ItemRequestDto(1, "test", new ArrayList<ItemDto>(), user, LocalDateTime.now());
+        itemRequestDto = new ItemRequestDto(1, "test", new ArrayList<ItemDto>(), user,
+                LocalDateTime.now());
     }
 
     @Test

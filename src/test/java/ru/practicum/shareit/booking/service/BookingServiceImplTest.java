@@ -3,12 +3,14 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import ru.practicum.shareit.booking.dto.BookingBookerDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFullDto;
+import ru.practicum.shareit.booking.exception.*;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.status.Status;
 import ru.practicum.shareit.item.comment.CommentDto;
@@ -30,6 +32,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Rollback(false)
 @SpringBootTest(
@@ -94,6 +98,93 @@ class BookingServiceImplTest {
         assertThat(booking.getItem().getId(), equalTo(bookingDto.getItemId()));
         assertThat(booking.getBooker().getId(), equalTo(2));
         assertThat(booking.getStatus(), equalTo(Status.WAITING));
+    }
+
+    @Test
+    void shouldValidationExceptionUnsupportedStatus() {
+        final ValidationException exception = assertThrows(
+                ValidationException.class,
+                new Executable() {
+                    @Override
+                    public void execute() {
+                        bookingService.getBookingsOwner(1, "UNSUPPORTED_STATUS", 0, 10);
+                    }
+                });
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", exception.getMessage());
+    }
+
+    @Test
+    void shouldUserNotFoundException() {
+        final UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        BookingDto bookingDto = new BookingDto(100, 1, 1,
+                                LocalDateTime.now().plusHours(1),
+                                LocalDateTime.now().plusHours(2), Status.WAITING);
+                        bookingService.add(200, bookingDto);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldUserNotFoundExceptionGet() {
+        final UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        bookingService.get(10000, 1);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldItemNotFoundException() {
+        final ItemNotFoundException exception = assertThrows(
+                ItemNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        BookingDto bookingDto = new BookingDto(100, 100, 1,
+                                LocalDateTime.now().plusHours(1),
+                                LocalDateTime.now().plusHours(2), Status.WAITING);
+                        bookingService.add(2, bookingDto);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldBookingNotFoundException() {
+        final BookingNotFoundException exception = assertThrows(
+                BookingNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        bookingService.get(1, 200);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldInvalidException() {
+        final InvalidException exception = assertThrows(
+                InvalidException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        BookingDto bookingDto = new BookingDto(100, 1, 1,
+                                LocalDateTime.now().minusDays(100),
+                                LocalDateTime.now().plusHours(2), Status.WAITING);
+                        bookingService.add(200, bookingDto);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
     }
 
     @Test
