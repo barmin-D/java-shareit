@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemMapperImplTest {
     @Autowired
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
     private Item item;
     private User user;
     private ItemDto itemDto;

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class CommentMapperImplTest {
     @Autowired
-    CommentMapper commentMapper;
+    private CommentMapper commentMapper;
     private Item item;
     private User user;
     private ItemDto itemDto;

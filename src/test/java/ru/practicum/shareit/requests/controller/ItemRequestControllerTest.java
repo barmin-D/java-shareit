@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -35,19 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 class ItemRequestControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
 
     @MockBean
-    BookingService bookingService;
-
-    @MockBean
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @Autowired
     private MockMvc mvc;

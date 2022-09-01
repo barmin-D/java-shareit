@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import ru.practicum.shareit.booking.dto.BookingBookerDto;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -35,7 +34,6 @@ import static org.hamcrest.Matchers.notNullValue;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemRequestServiceImplTest {
     private final EntityManager em;
-    private final BookingService bookingService;
     private final ItemService itemService;
     private final UserService userService;
     private final ItemRequestService itemRequestService;

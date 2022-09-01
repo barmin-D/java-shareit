@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingMapperImplTest {
     @Autowired
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
     private Item item;
     private User user;
     private ItemDto itemDto;

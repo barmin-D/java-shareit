@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserMapperImplTest {
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
     private User user;
     private UserDto userDto;
 

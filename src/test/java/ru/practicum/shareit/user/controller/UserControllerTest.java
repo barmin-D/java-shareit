@@ -27,10 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private MockMvc mvc;

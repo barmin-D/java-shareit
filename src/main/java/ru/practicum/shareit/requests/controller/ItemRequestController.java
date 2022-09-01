@@ -10,7 +10,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
 
     @Autowired
     public ItemRequestController(ItemRequestService itemRequestService) {
