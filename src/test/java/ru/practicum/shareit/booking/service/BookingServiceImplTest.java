@@ -7,6 +7,8 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.dto.BookingBookerDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFullDto;
@@ -35,9 +37,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Rollback(false)
+@Transactional
+@Rollback(value = false)
 @SpringBootTest(
-        properties = "db.name=test3",
+        properties = "db.name=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingServiceImplTest {
@@ -98,221 +101,5 @@ class BookingServiceImplTest {
         assertThat(booking.getItem().getId(), equalTo(bookingDto.getItemId()));
         assertThat(booking.getBooker().getId(), equalTo(2));
         assertThat(booking.getStatus(), equalTo(Status.WAITING));
-    }
-
-    @Test
-    void shouldValidationExceptionUnsupportedStatus() {
-        final ValidationException exception = assertThrows(
-                ValidationException.class,
-                new Executable() {
-                    @Override
-                    public void execute() {
-                        bookingService.getBookingsOwner(1, "UNSUPPORTED_STATUS", 0, 10);
-                    }
-                });
-        assertEquals("Unknown state: UNSUPPORTED_STATUS", exception.getMessage());
-    }
-
-    @Test
-    void shouldUserNotFoundException() {
-        final UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        BookingDto bookingDto = new BookingDto(100, 1, 1,
-                                LocalDateTime.now().plusHours(1),
-                                LocalDateTime.now().plusHours(2), Status.WAITING);
-                        bookingService.add(200, bookingDto);
-                    }
-                });
-        assertEquals(null, exception.getMessage());
-    }
-
-    @Test
-    void shouldUserNotFoundExceptionGet() {
-        final UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        bookingService.get(10000, 1);
-                    }
-                });
-        assertEquals(null, exception.getMessage());
-    }
-
-    @Test
-    void shouldItemNotFoundException() {
-        final ItemNotFoundException exception = assertThrows(
-                ItemNotFoundException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        BookingDto bookingDto = new BookingDto(100, 100, 1,
-                                LocalDateTime.now().plusHours(1),
-                                LocalDateTime.now().plusHours(2), Status.WAITING);
-                        bookingService.add(2, bookingDto);
-                    }
-                });
-        assertEquals(null, exception.getMessage());
-    }
-
-    @Test
-    void shouldBookingNotFoundException() {
-        final BookingNotFoundException exception = assertThrows(
-                BookingNotFoundException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        bookingService.get(1, 200);
-                    }
-                });
-        assertEquals(null, exception.getMessage());
-    }
-
-    @Test
-    void shouldInvalidException() {
-        final InvalidException exception = assertThrows(
-                InvalidException.class,
-                new Executable() {
-                    @Override
-                    public void execute() throws Throwable {
-                        BookingDto bookingDto = new BookingDto(100, 1, 1,
-                                LocalDateTime.now().minusDays(100),
-                                LocalDateTime.now().plusHours(2), Status.WAITING);
-                        bookingService.add(200, bookingDto);
-                    }
-                });
-        assertEquals(null, exception.getMessage());
-    }
-
-    @Test
-    void get() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        Optional<BookingFullDto> dto = bookingService.get(1, 1);
-
-        assertThat(dto.get().getId(), notNullValue());
-    }
-
-    @Test
-    void approveBooking() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Optional<BookingFullDto> dto = bookingService.get(1, 1);
-
-        assertThat(dto.get().getId(), notNullValue());
-        assertThat(dto.get().getStatus(), equalTo(Status.APPROVED));
-    }
-
-    @Test
-    void getBookingsOwnerAll() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "ALL", 1, 10);
-
-        assertThat(list.size(), equalTo(1));
-    }
-
-    @Test
-    void getBookingsOwnerFuture() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(2, "FUTURE", 1, 10);
-
-        assertThat(list.size(), equalTo(1));
-    }
-
-    @Test
-    void getBookingsOwnerPast() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "PAST", 1, 10);
-
-        assertThat(list.size(), equalTo(0));
-    }
-
-    @Test
-    void getBookingsOwnerCurrent() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "CURRENT", 1, 10);
-
-        assertThat(list.size(), equalTo(0));
-    }
-
-    @Test
-    void getBookingsAll() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "ALL", 1, 10);
-
-        assertThat(list.size(), equalTo(1));
-    }
-
-    @Test
-    void getBookingsFuture() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "FUTURE", 1, 10);
-
-        assertThat(list.size(), equalTo(1));
-    }
-
-    @Test
-    void getBookingsCurrent() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "CURRENT", 1, 10);
-
-        assertThat(list.size(), equalTo(0));
-    }
-
-    @Test
-    void getBookingsPast() {
-        BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(2), Status.WAITING);
-        bookingService.add(2, bookingDto);
-
-        bookingService.approveBooking(1, 1, true);
-
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "PAST", 1, 10);
-
-        assertThat(list.size(), equalTo(0));
     }
 }
