@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Rollback(false)
 @SpringBootTest(
@@ -40,6 +42,14 @@ class UserServiceImplTest {
     }
 
     @Test
+    void saveUserBad() {
+        UserDto userDto = makeUserDto(1, "user", null);
+
+        assertThrows(ResponseStatusException.class, () -> userService.saveUser(userDto));
+    }
+
+
+    @Test
     void get() {
         UserDto userDto = makeUserDto(1, "user", "user@user.ru");
         userService.saveUser(userDto);
@@ -49,6 +59,14 @@ class UserServiceImplTest {
         assertThat(optionalUserDto.get().getId(), notNullValue());
         assertThat(optionalUserDto.get().getName(), equalTo(userDto.getName()));
         assertThat(optionalUserDto.get().getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void getBad() {
+        UserDto userDto = makeUserDto(1, "user", "user@user.ru");
+        userService.saveUser(userDto);
+
+        assertThrows(ResponseStatusException.class, () -> userService.get(199));
     }
 
     @Test

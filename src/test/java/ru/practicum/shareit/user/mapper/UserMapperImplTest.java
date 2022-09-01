@@ -24,25 +24,25 @@ class UserMapperImplTest {
     @Test
     void toUserDto() {
         user = new User(1, "testName2", "test2@email.ru");
-        userDto=userMapper.toUserDto(user);
-        assertEquals(userDto.getName(),user.getName());
-        assertEquals(userDto.getEmail(),user.getEmail());
+        userDto = userMapper.toUserDto(user);
+        assertEquals(userDto.getName(), user.getName());
+        assertEquals(userDto.getEmail(), user.getEmail());
     }
 
     @Test
     void toUser() {
         userDto = new UserDto(1, "testName", "test@email.ru");
-        user=userMapper.toUser(userDto);
-        assertEquals(userDto.getName(),user.getName());
-        assertEquals(userDto.getEmail(),user.getEmail());
+        user = userMapper.toUser(userDto);
+        assertEquals(userDto.getName(), user.getName());
+        assertEquals(userDto.getEmail(), user.getEmail());
     }
 
     @Test
     void updateUserFromUserDto() {
         userDto = new UserDto(1, "n", "test@email.ru");
         user = new User(1, "testName2", "test2@email.ru");
-        userMapper.updateUserFromUserDto(userDto,user);
-        assertEquals(userDto.getName(),user.getName());
-        assertEquals(userDto.getEmail(),user.getEmail());
+        userMapper.updateUserFromUserDto(userDto, user);
+        assertEquals(userDto.getName(), user.getName());
+        assertEquals(userDto.getEmail(), user.getEmail());
     }
 }

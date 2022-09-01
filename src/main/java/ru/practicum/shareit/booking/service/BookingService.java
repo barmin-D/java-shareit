@@ -17,5 +17,7 @@ public interface BookingService {
 
     Collection<BookingFullDto> getBookingsOwner(Integer userId, String state, Integer from, Integer size);
 
+    void getBookingHttpStatus(int count);
+
     Collection<BookingFullDto> getBookings(Integer userId, String state, Integer from, Integer size);
 }

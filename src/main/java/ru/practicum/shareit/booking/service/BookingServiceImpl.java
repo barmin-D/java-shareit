@@ -158,6 +158,18 @@ public class BookingServiceImpl implements BookingService {
             throw new UserNotFoundException();
         }
     }
+    @Override
+    public void getBookingHttpStatus(int count){
+        if(count==1){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        if(count==2){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if(count==3){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @Override
     public Collection<BookingFullDto> getBookings(Integer userId, String state, Integer from, Integer size) {

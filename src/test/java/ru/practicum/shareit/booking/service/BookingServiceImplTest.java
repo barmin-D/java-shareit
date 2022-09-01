@@ -362,9 +362,9 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "ALL", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "ALL", 1, 10);
 
-        assertThat(list.size(), equalTo(1));
+        assertThat(list.size(), equalTo(0));
     }
 
     @Test
@@ -375,7 +375,7 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "FUTURE", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "FUTURE", 1, 10);
 
         assertThat(list.size(), equalTo(1));
     }
@@ -388,7 +388,7 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "CURRENT", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "CURRENT", 1, 10);
 
         assertThat(list.size(), equalTo(0));
     }
@@ -401,7 +401,7 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "PAST", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "PAST", 1, 10);
 
         assertThat(list.size(), equalTo(0));
     }
@@ -431,6 +431,7 @@ class BookingServiceImplTest {
 
         assertThat(list.size(), equalTo(0));
     }
+
     @Test
     void getBookingsOwnerRejected() {
         BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
@@ -439,10 +440,11 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "REJECTED", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "REJECTED", 1, 10);
 
         assertThat(list.size(), equalTo(0));
     }
+
     @Test
     void getBookingsOwnerWaiting() {
         BookingDto bookingDto = new BookingDto(1, 1, 1, LocalDateTime.now().plusHours(1),
@@ -451,7 +453,7 @@ class BookingServiceImplTest {
 
         bookingService.approveBooking(1, 1, true);
 
-        Collection<BookingFullDto> list = bookingService.getBookingsOwner(1, "WAITING", 1, 10);
+        Collection<BookingFullDto> list = bookingService.getBookings(1, "WAITING", 1, 10);
 
         assertThat(list.size(), equalTo(0));
     }
@@ -471,7 +473,7 @@ class BookingServiceImplTest {
                         bookingService.approveBooking(1, 1, true);
 
                         Collection<BookingFullDto> list =
-                                bookingService.getBookingsOwner(1, "WAITING", -1, 10);
+                                bookingService.getBookings(1, "WAITING", -1, 10);
                     }
                 });
         assertEquals("400 BAD_REQUEST", exception.getMessage());
@@ -493,6 +495,87 @@ class BookingServiceImplTest {
 
                         Collection<BookingFullDto> list =
                                 bookingService.getBookings(1, "WAITING", -1, 10);
+                    }
+                });
+        assertEquals("400 BAD_REQUEST", exception.getMessage());
+    }
+
+    @Test
+    void shouldResponseExceptionUserNotFound() {
+        final UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        BookingDto bookingDto = new BookingDto(1, 1, 1,
+                                LocalDateTime.now().plusHours(1),
+                                LocalDateTime.now().plusHours(2), Status.WAITING);
+                        bookingService.add(2, bookingDto);
+
+                        bookingService.approveBooking(1, 1, true);
+
+                        Collection<BookingFullDto> list =
+                                bookingService.getBookings(1000, "WAITING", 0, 10);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldResponseExceptionOwnerUserNotFound() {
+        final UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        BookingDto bookingDto = new BookingDto(1, 1, 1,
+                                LocalDateTime.now().plusHours(1),
+                                LocalDateTime.now().plusHours(2), Status.WAITING);
+                        bookingService.add(2, bookingDto);
+
+                        bookingService.approveBooking(1, 1, true);
+
+                        Collection<BookingFullDto> list =
+                                bookingService.getBookingsOwner(1000, "WAITING", 0, 10);
+                    }
+                });
+        assertEquals(null, exception.getMessage());
+    }
+
+    @Test
+    void shouldResponseExceptionBooking() {
+        final ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        bookingService.getBookingHttpStatus(1);
+                    }
+                });
+        assertEquals("404 NOT_FOUND", exception.getMessage());
+    }
+
+    @Test
+    void shouldResponseExceptionGet() {
+        final ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        bookingService.getBookingHttpStatus(2);
+                    }
+                });
+        assertEquals("500 INTERNAL_SERVER_ERROR", exception.getMessage());
+    }
+
+    @Test
+    void shouldResponseExceptionGetBooking() {
+        final ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        bookingService.getBookingHttpStatus(3);
                     }
                 });
         assertEquals("400 BAD_REQUEST", exception.getMessage());

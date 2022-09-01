@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.dto.BookingBookerDto;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Rollback(false)
 @SpringBootTest(
@@ -82,6 +85,13 @@ class ItemServiceImplTest {
         assertThat(item.getName(), equalTo(itemDto.getName()));
         assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
         assertThat(item.getOwner(), equalTo(itemDto.getOwner()));
+    }
+
+    @Test
+    void addNewItemUserNotFound() {
+        itemDto = makeItemDto(1, "name", "description", true,
+                new User(1, "torti", "torti@email"), null, null, null,
+                null, new ArrayList<>());
     }
 
     @Test
@@ -145,7 +155,7 @@ class ItemServiceImplTest {
             itemService.addNewItem(1, i);
         }
         Collection<ItemDto> list = itemService.getItems(1);
-        assertThat(list, hasSize(3));
+        assertThat(list, hasSize(4));
         for (ItemDto s : source) {
             assertThat(list, hasItem(allOf(hasProperty("id", notNullValue()),
                     hasProperty("name", equalTo(s.getName())),
@@ -173,5 +183,30 @@ class ItemServiceImplTest {
         Collection<ItemDto> list = itemService.search(1, "desc");
 
         assertThat(list, hasSize(3));
+    }
+
+    @Test
+    void shouldUserNotFoundInComment() {
+        itemDto = makeItemDto(1, "name", "description", true,
+                new User(1, "torti", "torti@email"), null, null, null,
+                null, new ArrayList<>());
+        itemService.addNewItem(1, itemDto);
+        assertThrows(ResponseStatusException.class, () -> itemService.createComment(444, 1, new CommentDto()));
+    }
+
+    @Test
+    void shouldItemNotFoundInComment() {
+        CommentDto commentDto = new CommentDto(1, "", userDto.getName(), LocalDateTime.now());
+        assertThrows(ResponseStatusException.class, () -> itemService.createComment(1, 1, commentDto));
+    }
+
+    @Test
+    void shouldUserAndItemNotFoundInComment() {
+        itemDto = makeItemDto(1, "name", "description", true,
+                new User(1, "torti", "torti@email"), null, null, null,
+                null, new ArrayList<>());
+        itemService.addNewItem(1, itemDto);
+        CommentDto commentDto = new CommentDto(1, "", userDto.getName(), LocalDateTime.now());
+        assertThrows(ResponseStatusException.class, () -> itemService.createComment(1, 1, commentDto));
     }
 }
