@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class BookingServiceImpl implements BookingService {
     private ItemDbRepository itemRepository;
@@ -139,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
                             LocalDateTime.now(), pageable);
                     break;
                 case "FUTURE":
-                    bookingCollection = bookingRepository.findAllByBookerInFuture(user,pageable);
+                    bookingCollection = bookingRepository.findAllByBookerInFuture(user, pageable);
                     break;
                 case "WAITING":
                     bookingCollection = bookingRepository.findAllByItemOwnerAndStatus(user, Status.WAITING, pageable);
@@ -158,15 +157,16 @@ public class BookingServiceImpl implements BookingService {
             throw new UserNotFoundException();
         }
     }
+
     @Override
-    public void getBookingHttpStatus(int count){
-        if(count==1){
+    public void getBookingHttpStatus(int count) {
+        if (count == 1) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        if(count==2){
+        if (count == 2) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if(count==3){
+        if (count == 3) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
