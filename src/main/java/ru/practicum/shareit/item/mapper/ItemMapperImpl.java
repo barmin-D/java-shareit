@@ -23,6 +23,9 @@ public class ItemMapperImpl implements ItemMapper {
         itemDto.description(item.getDescription());
         itemDto.available(item.getAvailable());
         itemDto.owner(item.getOwner());
+        if (item.getRequest() != null) {
+            itemDto.requestId(item.getRequest().getId());
+        }
         itemDto.request(item.getRequest());
         return itemDto.build();
     }
